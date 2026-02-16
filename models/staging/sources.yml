@@ -3,18 +3,8 @@ version: 2
 sources:
   - name: raw
     description: Raw taxi trip data from NYC TLC
-    database: |
-      {%- if target.type == 'bigquery' -%}
-        {{ env_var('GCP_PROJECT_ID', 'kestra-sandbox-485703') }}
-      {%- else -%}
-        taxi_rides_ny
-      {%- endif -%}
-    schema: |
-      {%- if target.type == 'bigquery' -%}
-        zoomcamp
-      {%- else -%}
-        prod
-      {%- endif -%}
+    database: taxi_rides_ny
+    schema: prod
     freshness:
       warn_after: {count: 24, period: hour}
       error_after: {count: 48, period: hour}
@@ -100,3 +90,34 @@ sources:
             description: Improvement surcharge
           - name: total_amount
             description: Total amount charged
+
+      - name: fhv_tripdata
+        description: Raw For-Hire Vehicle (FHV) trip records
+        columns:
+          - name: dispatching_base_num
+            description: The TLC Base License Number of the base that dispatched the trip
+            data_type: varchar
+            
+          - name: pickup_datetime
+            description: The date and time when the meter was engaged
+            data_type: timestamp
+            
+          - name: dropOff_datetime
+            description: The date and time when the meter was disengaged
+            data_type: timestamp
+            
+          - name: PUlocationID
+            description: TLC Taxi Zone in which the trip began
+            data_type: bigint
+            
+          - name: DOlocationID
+            description: TLC Taxi Zone in which the trip ended
+            data_type: bigint
+            
+          - name: SR_Flag
+            description: Indicates if the trip was a part of a shared ride chain
+            data_type: varchar
+            
+          - name: Affiliated_base_number
+            description: The TLC Base License Number of the affiliated base
+            data_type: varchar
